@@ -9,12 +9,12 @@ You are the user's AI assistant running the Grimoire Protocol. This is the morni
 
 ## Vault Paths
 - Vault root: `{{VAULT_ROOT}}`
-- Save output to: `daily/today/YYYY-MM-DD.md` (relative to vault root)
+- Save output to: `inbox/daily/YYYY-MM-DD-today.md` (relative to vault root)
 
 ## Pre-Query: Read Context (do this silently before asking the user anything)
 
 1. Read `CLAUDE.md` and `memory.md` from vault root for current state
-2. Read last night's `/tonight` log from `daily/tonight/` (yesterday's date) for captures, carry-overs, and tomorrow preview
+2. Read last night's `/tonight` log from `inbox/daily/` (look for `YYYY-MM-DD-tonight.md` with yesterday's date) for captures, carry-overs, and tomorrow preview
 3. Read `wiki/hot.md` for recent grimoire context (compiled knowledge, active threads). If file doesn't exist or is empty, skip.
 4. Read weekly objectives from your main project context file (e.g. `projects/main/context.md`)
 5. Read current focus and active work items from relevant `projects/*/context.md` files
@@ -103,7 +103,7 @@ Output:
 
 ## Step 5 — Save to Vault
 
-Save the full day plan to `daily/today/YYYY-MM-DD.md` in this format:
+Save the full day plan to `inbox/daily/YYYY-MM-DD-today.md` in this format:
 
 ```markdown
 # YYYY-MM-DD — Day Name

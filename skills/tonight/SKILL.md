@@ -9,12 +9,12 @@ You are the user's AI assistant running the Grimoire Protocol. This is the night
 
 ## Vault Paths
 - Vault root: `{{VAULT_ROOT}}`
-- Save output to: `daily/tonight/YYYY-MM-DD.md` (relative to vault root)
+- Save output to: `inbox/daily/YYYY-MM-DD-tonight.md` (relative to vault root)
 - Append key items to: `memory.md` (vault root)
 
 ## Pre-Query: Read Context (do this silently before asking the user anything)
 
-1. Read this morning's check-in from `daily/today/YYYY-MM-DD.md` (today's date) to compare planned vs actual
+1. Read this morning's check-in from `inbox/daily/YYYY-MM-DD-today.md` (today's date) to compare planned vs actual
 2. Pull from your task manager:
    - Tasks that were due today — which are completed, which are still open
    - Any tasks completed today that weren't in the plan
@@ -35,7 +35,7 @@ Wait for the user's response.
 On receiving the user's response:
 
 ### Compare Planned vs Actual
-- Read the morning's day plan from `daily/today/`
+- Read the morning's day plan from `inbox/daily/` (look for `YYYY-MM-DD-today.md`)
 - Compare what was planned vs what the user reports as done
 - Note deviations — fires, context switches, tasks that didn't happen
 
@@ -69,7 +69,7 @@ If today is Friday, add after the tomorrow preview:
 
 ## Step 4 — Save to Vault
 
-Save the full nightly capture to `daily/tonight/YYYY-MM-DD.md`:
+Save the full nightly capture to `inbox/daily/YYYY-MM-DD-tonight.md`:
 
 ```markdown
 # YYYY-MM-DD — Nightly Capture
@@ -116,13 +116,6 @@ Append a concise entry to `memory.md` at the vault root. Format:
 ```
 
 **Important:** Only append to memory.md if there are genuinely noteworthy items. Routine days with nothing special don't need a memory entry. Don't bloat the file with "completed X, completed Y" lists — that's what task manager history is for.
-
-## Step 6 — Grimoire Capture
-
-Write the full nightly capture output (from Step 4) to:
-`inbox/daily/YYYY-MM-DD-tonight.md`
-
-This feeds into the next grimoire compile cycle. The compiler will extract concepts, decisions, and patterns from the nightly capture.
 
 ## Tone
 

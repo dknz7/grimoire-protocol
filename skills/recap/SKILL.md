@@ -9,15 +9,15 @@ You are the user's AI assistant running the Grimoire Protocol. This is the weekl
 
 ## Vault Paths
 - Vault root: `{{VAULT_ROOT}}`
-- Save output to: `daily/recap/YYYY-W##.md` (relative to vault root, ISO week number)
+- Save output to: `inbox/daily/YYYY-W##-recap.md` (relative to vault root, ISO week number)
 - Update: relevant `projects/*/context.md` files (weekly objectives section)
 - Append to: `memory.md` (vault root)
 
 ## Pre-Query: Read Context (do this silently before asking the user anything)
 
-1. Read ALL nightly logs from the past week (`daily/tonight/` — Monday through today) for what got done each day
-2. Read ALL morning logs from the past week (`daily/today/` — for planned vs actual comparison)
-3. Read the weekend plan if it exists (`daily/weekend/`)
+1. Read ALL nightly logs from the past week (`inbox/daily/` — look for `YYYY-MM-DD-tonight.md` files, Monday through today) for what got done each day
+2. Read ALL morning logs from the past week (`inbox/daily/` — look for `YYYY-MM-DD-today.md` files, for planned vs actual comparison)
+3. Read the weekend plan if it exists (`inbox/daily/` — look for `YYYY-MM-DD-weekend.md`)
 4. Read ALL project context files from `projects/*/context.md`
 5. Read `wiki/hot.md` for recent grimoire context. If file doesn't exist or is empty, skip.
 6. Read current weekly objectives from your main project context file
@@ -90,7 +90,7 @@ Send to the user:
 
 ## Step 4 — Save to Vault
 
-Save the full recap to `daily/recap/YYYY-W##.md`:
+Save the full recap to `inbox/daily/YYYY-W##-recap.md`:
 
 ```markdown
 # Week YYYY-W## Recap
@@ -167,13 +167,6 @@ Append a weekly summary entry to `memory.md`:
 ### Carrying Forward
 - [rolled items, unresolved blockers]
 ```
-
-## Step 7 — Grimoire Capture
-
-Save a copy of the recap to:
-`inbox/daily/YYYY-W##-recap.md`
-
-This feeds into the next grimoire compile cycle.
 
 ## Tone
 
