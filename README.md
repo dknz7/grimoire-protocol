@@ -354,6 +354,8 @@ Grimoire Protocol ships with 13 Claude Code skills across two layers.
 
 The daily workflow skills are pre-wired to feed into the grimoire — tonight's capture, weekend plans, weekly recaps, and session summaries all land in `inbox/` for the next compile cycle.
 
+**Task manager integration:** The daily skills work best with a task manager MCP connected (TickTick, Todoist, Linear, etc.) for pulling live tasks, calendar events, and habits. Without one, the skills still work — they just ask you instead of pulling automatically. See [`docs/task-manager-integration.md`](docs/task-manager-integration.md) for setup, and [`docs/examples/ticktick-setup.md`](docs/examples/ticktick-setup.md) for a complete worked example.
+
 ### Discord Bot Integration (Optional)
 
 If you run a Discord bot alongside Claude Code, the daily workflow skills can be triggered via `!` commands from Discord channels:
