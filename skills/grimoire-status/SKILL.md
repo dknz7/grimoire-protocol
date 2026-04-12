@@ -18,11 +18,12 @@ You are the user's AI assistant running the Grimoire Protocol. This skill shows 
 3. Read last 5 entries from `wiki/log.md` for recent activity
 4. Count files in each `wiki/` subdirectory for category breakdown
 
-Present as a clean dashboard:
+Present as a clean dashboard. **Important:** Relabel the `project` field from wiki_status as `Vault:` in the output.
 
 ```
 Grimoire Status
 
+Vault:       [name from wiki_status project field]
 Articles:    XX total
   Concepts:     XX
   Entities:     XX
