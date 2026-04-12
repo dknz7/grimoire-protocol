@@ -1,5 +1,25 @@
 # Grimoire Protocol — Architecture
 
+## What This Repo Is (And Isn't)
+
+**Grimoire Protocol is the integration layer.** It contains the skills, hooks, config templates, and scaffold scripts that wire everything together. It does NOT contain the compilation engine.
+
+**The engine is [sage-wiki](https://github.com/xoai/sage-wiki)** — a separate Go project that provides SQLite + FTS5 storage, hybrid search, MCP tools, and the web UI. Grimoire Protocol pulls sage-wiki at build time (via the scaffold scripts) and brands the binary as `grimoire`. We don't fork sage-wiki — we consume it.
+
+**Why this separation?** sage-wiki handles storage and retrieval. Your Claude subscription handles all the LLM reasoning. Grimoire Protocol is the glue that connects them — the skills that orchestrate compilation, the hooks that capture sessions, and the config that ties it to your vault.
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  THIS REPO (grimoire-protocol)                               │
+│  Skills, hooks, config, scaffold scripts                     │
+│                                                              │
+│  ┌────────────────────┐    ┌──────────────────────────────┐  │
+│  │  Your Claude Sub   │    │  sage-wiki engine (grimoire) │  │
+│  │  (LLM reasoning)   │───>│  (SQLite, FTS5, MCP, Web UI) │  │
+│  └────────────────────┘    └──────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────┘
+```
+
 ## The Three Layers
 
 ```
