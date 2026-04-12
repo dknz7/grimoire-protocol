@@ -226,23 +226,34 @@ cp hooks/* /path/to/your/vault/scripts/grimoire/
 
 **Engine config** — copy `config/config.yaml.template` to your vault root as `config.yaml`. Customise the source folders and timezone.
 
-**MCP server** — you need to register the grimoire engine with Claude Code. If you already have a `.mcp.json` in your vault root, add the `grimoire` entry to your existing `mcpServers`:
+**MCP server** — you need to register the grimoire engine with Claude Code. The config location varies by setup, so you'll need to find where YOUR existing MCP servers are configured. Common locations:
+
+| Location | When to use |
+|---|---|
+| `~/.claude.json` | Most common for global MCP servers (check for a `mcpServers` key) |
+| `~/.claude/settings.json` | Some setups use this instead |
+| `<vault>/.mcp.json` | Project-level only (works when Claude Code is opened in the vault) |
+| `~/Library/Application Support/Claude/claude_desktop_config.json` | macOS Claude desktop app |
+| `%APPDATA%\Claude\claude_desktop_config.json` | Windows Claude desktop app |
+
+**How to find yours:** If you already have MCP servers running (like TickTick, SequentialThinking, etc.), search for their names in the files above. Whichever file contains them is where grimoire should go too.
+
+Add this to the `mcpServers` section of that file:
 
 ```json
-{
-  "mcpServers": {
-    "grimoire": {
-      "command": "/path/to/your/vault/.grimoire/grimoire",
-      "args": ["serve", "--project", "/path/to/your/vault"],
-      "env": {}
-    }
-  }
+"grimoire": {
+  "type": "stdio",
+  "command": "/path/to/your/vault/.grimoire/grimoire",
+  "args": ["serve", "--project", "/path/to/your/vault"],
+  "env": {}
 }
 ```
 
-On Windows, use double backslashes in paths: `"C:\\path\\to\\vault\\.grimoire\\grimoire.exe"`
+On Windows, use double backslashes: `"C:\\path\\to\\vault\\.grimoire\\grimoire.exe"`
 
-**Hooks & permissions** — merge the contents of `config/settings-hooks.json.template` into your `.claude/settings.local.json`. If you don't have one yet, create it. If you already have `permissions` or `hooks`, add our entries to your existing arrays — don't overwrite.
+The scaffold script (`scaffold.sh` / `scaffold.ps1`) will scan these locations automatically and show you what it finds.
+
+**Hooks & permissions** — similarly, find which file holds your existing hooks or permissions and merge in the grimoire hooks. See `config/settings-hooks.json.template` for the full JSON structure. Hook commands use absolute paths to the vault's `scripts/grimoire/` folder, so they work from any Claude Code session regardless of working directory.
 
 **Windows users:** replace `python3` in the hook commands with the full path to your Python executable.
 

@@ -274,127 +274,141 @@ elif command -v python &>/dev/null; then
     PYTHON_PATH="$(command -v python)"
 fi
 
-# --- MCP config (global by default) ---
+# --- MCP config (smart detection) ---
 echo ""
-echo -e "${YELLOW}MCP server config — where should we install it?${NC}"
+echo -e "${CYAN}Detecting MCP configuration...${NC}"
 echo "  The grimoire engine registers 15 MCP tools (13 auto-approved)."
 echo ""
-echo "  1) ~/.claude/.mcp.json (global — available in all projects, recommended)"
-echo "  2) Custom location"
-read -rp "Choice [1/2]: " MCP_CHOICE
 
-CLAUDE_HOME="$HOME/.claude"
-mkdir -p "$CLAUDE_HOME"
+# Scan known locations for files containing mcpServers
+MCP_CANDIDATES=()
+MCP_CANDIDATE_LABELS=()
 
-if [ "$MCP_CHOICE" = "2" ]; then
-    read -rp "Path to .mcp.json: " MCP_TARGET
-else
-    MCP_TARGET="$CLAUDE_HOME/.mcp.json"
-fi
+# Check common locations
+for candidate in \
+    "$HOME/.claude.json" \
+    "$HOME/.claude/settings.json" \
+    "$HOME/.claude/.mcp.json" \
+    "$HOME/Library/Application Support/Claude/claude_desktop_config.json" \
+    "$VAULT_ROOT/.mcp.json"; do
+    if [ -f "$candidate" ] && grep -q "mcpServers" "$candidate" 2>/dev/null; then
+        MCP_CANDIDATES+=("$candidate")
+        MCP_CANDIDATE_LABELS+=("$candidate (has mcpServers)")
+    fi
+done
 
-MCP_ENTRY="\"grimoire\": { \"command\": \"$GRIMOIRE_DIR/grimoire\", \"args\": [\"serve\", \"--project\", \"$VAULT_ROOT\"], \"env\": {} }"
+# Also check for files that exist but DON'T have mcpServers yet
+for candidate in \
+    "$HOME/.claude.json" \
+    "$HOME/.claude/settings.json" \
+    "$VAULT_ROOT/.mcp.json"; do
+    if [ -f "$candidate" ] && ! grep -q "mcpServers" "$candidate" 2>/dev/null; then
+        # Only add if not already in the list
+        already=false
+        for existing in "${MCP_CANDIDATES[@]}"; do
+            [ "$existing" = "$candidate" ] && already=true
+        done
+        if ! $already; then
+            MCP_CANDIDATES+=("$candidate")
+            MCP_CANDIDATE_LABELS+=("$candidate (exists, no mcpServers yet)")
+        fi
+    fi
+done
 
-if [ -f "$MCP_TARGET" ]; then
-    echo -e "${YELLOW}$MCP_TARGET already exists.${NC}"
-    echo -e "Add this to your existing mcpServers:"
-    echo ""
-    echo "  $MCP_ENTRY"
-    echo ""
-else
-    cat > "$MCP_TARGET" << MCPEOF
-{
-  "mcpServers": {
-    "grimoire": {
-      "command": "$GRIMOIRE_DIR/grimoire",
-      "args": ["serve", "--project", "$VAULT_ROOT"],
-      "env": {}
-    }
-  }
+MCP_JSON_SNIPPET=$(cat <<SNIPPETEOF
+"grimoire": {
+  "type": "stdio",
+  "command": "$GRIMOIRE_DIR/grimoire",
+  "args": ["serve", "--project", "$VAULT_ROOT"],
+  "env": {}
 }
-MCPEOF
-    echo -e "${GREEN}MCP config written to $MCP_TARGET${NC}"
-fi
+SNIPPETEOF
+)
 
-# --- Hooks config (global by default) ---
-echo ""
-echo -e "${YELLOW}Hook config — where should we install it?${NC}"
-echo "  Hooks use absolute paths, so they work from any Claude Code session."
-echo ""
-echo "  1) ~/.claude/settings.local.json (global — recommended)"
-echo "  2) Custom location"
-read -rp "Choice [1/2]: " HOOKS_CHOICE
+if [ ${#MCP_CANDIDATES[@]} -gt 0 ]; then
+    echo -e "${YELLOW}Found these config files on your system:${NC}"
+    echo ""
+    for i in "${!MCP_CANDIDATES[@]}"; do
+        echo "  $((i+1))) ${MCP_CANDIDATE_LABELS[$i]}"
+    done
+    echo "  $((${#MCP_CANDIDATES[@]}+1))) Enter a custom path"
+    echo "  $((${#MCP_CANDIDATES[@]}+2))) Skip — I'll do it manually"
+    echo ""
+    read -rp "Which file should grimoire be added to? " MCP_CHOICE
 
-if [ "$HOOKS_CHOICE" = "2" ]; then
-    read -rp "Path to settings file: " HOOKS_TARGET
+    if [ "$MCP_CHOICE" -le "${#MCP_CANDIDATES[@]}" ] 2>/dev/null; then
+        MCP_TARGET="${MCP_CANDIDATES[$((MCP_CHOICE-1))]}"
+        echo ""
+        echo -e "${YELLOW}Add this to the mcpServers section in: $MCP_TARGET${NC}"
+        echo ""
+        echo "$MCP_JSON_SNIPPET"
+        echo ""
+        echo -e "${YELLOW}If the file already has mcpServers, add the grimoire entry inside it.${NC}"
+        echo -e "${YELLOW}If it doesn't have mcpServers yet, add: \"mcpServers\": { <the above> }${NC}"
+    elif [ "$MCP_CHOICE" = "$((${#MCP_CANDIDATES[@]}+1))" ]; then
+        read -rp "Path to your config file: " MCP_TARGET
+        echo ""
+        echo -e "${YELLOW}Add this to the mcpServers section in: $MCP_TARGET${NC}"
+        echo ""
+        echo "$MCP_JSON_SNIPPET"
+        echo ""
+    else
+        echo -e "${YELLOW}Skipped. You'll need to add the MCP config manually.${NC}"
+    fi
 else
-    HOOKS_TARGET="$CLAUDE_HOME/settings.local.json"
+    echo -e "${YELLOW}No existing MCP config files found.${NC}"
+    echo "  Common locations:"
+    echo "    macOS/Linux:  ~/.claude.json or ~/.claude/settings.json"
+    echo "    Windows:      %USERPROFILE%\\.claude.json"
+    echo "    Project-level: <vault>/.mcp.json"
+    echo ""
+    echo "  Check which file your other MCP servers (if any) are configured in,"
+    echo "  then add this to its mcpServers section:"
+    echo ""
+    echo "$MCP_JSON_SNIPPET"
 fi
+
+echo ""
+
+# --- Hooks config (smart detection) ---
+echo -e "${CYAN}Hooks configuration...${NC}"
+echo "  Hooks use absolute paths so they work from any Claude Code session."
+echo ""
 
 SESSION_START_CMD="$PYTHON_PATH $VAULT_ROOT/scripts/grimoire/session-start.py"
 SESSION_END_CMD="$PYTHON_PATH $VAULT_ROOT/scripts/grimoire/session-end.py"
 PRE_COMPACT_CMD="$PYTHON_PATH $VAULT_ROOT/scripts/grimoire/pre-compact.py"
 
-if [ -f "$HOOKS_TARGET" ]; then
-    echo -e "${YELLOW}$HOOKS_TARGET already exists.${NC}"
-    echo -e "Merge these hooks and permissions into your existing config."
-    echo ""
-    echo "  Hooks:"
-    echo "    SessionStart: $SESSION_START_CMD"
-    echo "    SessionEnd:   $SESSION_END_CMD"
-    echo "    PreCompact:   $PRE_COMPACT_CMD"
-    echo ""
-    echo "  See config/settings-hooks.json.template for the full JSON structure."
-    echo ""
-else
-    cat > "$HOOKS_TARGET" << HOOKEOF
-{
-  "permissions": {
-    "allow": [
-      "mcp__grimoire__wiki_status",
-      "mcp__grimoire__wiki_search",
-      "mcp__grimoire__wiki_read",
-      "mcp__grimoire__wiki_list",
-      "mcp__grimoire__wiki_write_summary",
-      "mcp__grimoire__wiki_write_article",
-      "mcp__grimoire__wiki_add_ontology",
-      "mcp__grimoire__wiki_add_source",
-      "mcp__grimoire__wiki_learn",
-      "mcp__grimoire__wiki_commit",
-      "mcp__grimoire__wiki_compile_diff",
-      "mcp__grimoire__wiki_ontology_query",
-      "mcp__grimoire__wiki_lint"
-    ]
-  },
-  "hooks": {
-    "SessionStart": [{
-      "matcher": "",
-      "hooks": [{
-        "type": "command",
-        "command": "$SESSION_START_CMD",
-        "timeout": 15
-      }]
-    }],
-    "PreCompact": [{
-      "matcher": "",
-      "hooks": [{
-        "type": "command",
-        "command": "$PRE_COMPACT_CMD",
-        "timeout": 10
-      }]
-    }],
-    "SessionEnd": [{
-      "matcher": "",
-      "hooks": [{
-        "type": "command",
-        "command": "$SESSION_END_CMD",
-        "timeout": 10
-      }]
-    }]
-  }
-}
-HOOKEOF
-    echo -e "${GREEN}Hooks and permissions written to $HOOKS_TARGET${NC}"
-fi
+# Scan for settings files that could hold hooks
+HOOKS_CANDIDATES=()
+for candidate in \
+    "$HOME/.claude.json" \
+    "$HOME/.claude/settings.json" \
+    "$HOME/.claude/settings.local.json" \
+    "$VAULT_ROOT/.claude/settings.local.json"; do
+    if [ -f "$candidate" ]; then
+        HOOKS_CANDIDATES+=("$candidate")
+    fi
+done
+
+echo -e "${YELLOW}Hooks need to be added to your Claude Code settings.${NC}"
+echo ""
+echo "  Check which file holds your existing hooks or permissions,"
+echo "  then merge in the grimoire hooks. Common locations:"
+echo ""
+for candidate in "${HOOKS_CANDIDATES[@]}"; do
+    echo "    - $candidate"
+done
+[ ${#HOOKS_CANDIDATES[@]} -eq 0 ] && echo "    (no settings files found)"
+echo ""
+echo "  Hook commands (use these exact strings with absolute paths):"
+echo ""
+echo "    SessionStart: $SESSION_START_CMD"
+echo "    SessionEnd:   $SESSION_END_CMD"
+echo "    PreCompact:   $PRE_COMPACT_CMD"
+echo ""
+echo "  See config/settings-hooks.json.template for the full JSON structure."
+echo ""
 
 # Obsidian CSS
 if [ -d "$VAULT_ROOT/.obsidian" ]; then

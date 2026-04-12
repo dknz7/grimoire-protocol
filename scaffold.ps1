@@ -277,125 +277,135 @@ $SessionStartEscaped = "$PythonEscaped $($VaultEscaped)\\scripts\\grimoire\\sess
 $SessionEndEscaped = "$PythonEscaped $($VaultEscaped)\\scripts\\grimoire\\session-end.py"
 $PreCompactEscaped = "$PythonEscaped $($VaultEscaped)\\scripts\\grimoire\\pre-compact.py"
 
-# --- MCP config (global by default) ---
+# --- MCP config (smart detection) ---
 Write-Host ""
-Write-Host "MCP server config — where should we install it?" -ForegroundColor Yellow
+Write-Host "Detecting MCP configuration..." -ForegroundColor Cyan
 Write-Host "  The grimoire engine registers 15 MCP tools (13 auto-approved)."
 Write-Host ""
-Write-Host "  1) ~/.claude/.mcp.json (global — available in all projects, recommended)"
-Write-Host "  2) Custom location"
-$mcpChoice = Read-Host "Choice [1/2]"
 
+# Scan known locations for files containing mcpServers
+$mcpCandidates = @()
 $ClaudeHome = Join-Path $env:USERPROFILE ".claude"
-New-Item -ItemType Directory -Path $ClaudeHome -Force | Out-Null
 
-if ($mcpChoice -eq "2") {
-    $mcpTarget = Read-Host "Path to .mcp.json"
-} else {
-    $mcpTarget = Join-Path $ClaudeHome ".mcp.json"
-}
+$mcpLocations = @(
+    (Join-Path $env:USERPROFILE ".claude.json"),
+    (Join-Path $ClaudeHome "settings.json"),
+    (Join-Path $ClaudeHome ".mcp.json"),
+    (Join-Path $VaultPath ".mcp.json")
+)
 
-if (Test-Path $mcpTarget) {
-    Write-Host "$mcpTarget already exists." -ForegroundColor Yellow
-    Write-Host "Add this to your existing mcpServers:"
-    Write-Host ""
-    Write-Host "  `"grimoire`": {"
-    Write-Host "    `"command`": `"$BinaryEscaped`","
-    Write-Host "    `"args`": [`"serve`", `"--project`", `"$VaultEscaped`"],"
-    Write-Host "    `"env`": {}"
-    Write-Host "  }"
-    Write-Host ""
-} else {
-    @"
-{
-  "mcpServers": {
-    "grimoire": {
-      "command": "$BinaryEscaped",
-      "args": ["serve", "--project", "$VaultEscaped"],
-      "env": {}
+# Also check Claude desktop app locations
+$appDataClaude = Join-Path $env:APPDATA "Claude\claude_desktop_config.json"
+if (Test-Path $appDataClaude) { $mcpLocations += $appDataClaude }
+
+foreach ($loc in $mcpLocations) {
+    if (Test-Path $loc) {
+        $content = Get-Content $loc -Raw -ErrorAction SilentlyContinue
+        if ($content -match "mcpServers") {
+            $mcpCandidates += [PSCustomObject]@{ Path = $loc; Label = "$loc (has mcpServers)" }
+        } else {
+            $mcpCandidates += [PSCustomObject]@{ Path = $loc; Label = "$loc (exists, no mcpServers yet)" }
+        }
     }
+}
+
+$mcpSnippet = @"
+
+  "grimoire": {
+    "type": "stdio",
+    "command": "$BinaryEscaped",
+    "args": ["serve", "--project", "$VaultEscaped"],
+    "env": {}
   }
-}
-"@ | Out-File -FilePath $mcpTarget -Encoding utf8
-    Write-Host "MCP config written to $mcpTarget" -ForegroundColor Green
-}
+"@
 
-# --- Hooks config (global by default) ---
-Write-Host ""
-Write-Host "Hook config — where should we install it?" -ForegroundColor Yellow
-Write-Host "  Hooks use absolute paths, so they work from any Claude Code session."
-Write-Host ""
-Write-Host "  1) ~/.claude/settings.local.json (global — recommended)"
-Write-Host "  2) Custom location"
-$hooksChoice = Read-Host "Choice [1/2]"
+if ($mcpCandidates.Count -gt 0) {
+    Write-Host "Found these config files on your system:" -ForegroundColor Yellow
+    Write-Host ""
+    for ($i = 0; $i -lt $mcpCandidates.Count; $i++) {
+        Write-Host "  $($i+1)) $($mcpCandidates[$i].Label)"
+    }
+    Write-Host "  $($mcpCandidates.Count + 1)) Enter a custom path"
+    Write-Host "  $($mcpCandidates.Count + 2)) Skip — I'll do it manually"
+    Write-Host ""
+    $mcpChoice = Read-Host "Which file should grimoire be added to?"
 
-if ($hooksChoice -eq "2") {
-    $hooksTarget = Read-Host "Path to settings file"
+    $choiceInt = 0
+    if ([int]::TryParse($mcpChoice, [ref]$choiceInt) -and $choiceInt -le $mcpCandidates.Count -and $choiceInt -ge 1) {
+        $mcpTarget = $mcpCandidates[$choiceInt - 1].Path
+        Write-Host ""
+        Write-Host "Add this to the mcpServers section in: $mcpTarget" -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host $mcpSnippet
+        Write-Host ""
+        Write-Host "If the file already has mcpServers, add the grimoire entry inside it." -ForegroundColor Yellow
+        Write-Host "If it doesn't have mcpServers yet, add:  `"mcpServers`": { <the above> }" -ForegroundColor Yellow
+    } elseif ($choiceInt -eq ($mcpCandidates.Count + 1)) {
+        $mcpTarget = Read-Host "Path to your config file"
+        Write-Host ""
+        Write-Host "Add this to the mcpServers section in: $mcpTarget" -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host $mcpSnippet
+        Write-Host ""
+    } else {
+        Write-Host "Skipped. You'll need to add the MCP config manually." -ForegroundColor Yellow
+    }
 } else {
-    $hooksTarget = Join-Path $ClaudeHome "settings.local.json"
+    Write-Host "No existing MCP config files found." -ForegroundColor Yellow
+    Write-Host "  Common locations:"
+    Write-Host "    Windows:       %USERPROFILE%\.claude.json or %USERPROFILE%\.claude\settings.json"
+    Write-Host "    macOS/Linux:   ~/.claude.json or ~/.claude/settings.json"
+    Write-Host "    Project-level: <vault>/.mcp.json"
+    Write-Host ""
+    Write-Host "  Check which file your other MCP servers (if any) are configured in,"
+    Write-Host "  then add this to its mcpServers section:"
+    Write-Host ""
+    Write-Host $mcpSnippet
 }
 
-if (Test-Path $hooksTarget) {
-    Write-Host "$hooksTarget already exists." -ForegroundColor Yellow
-    Write-Host "Merge these hooks and permissions into your existing config:"
-    Write-Host ""
-    Write-Host "  Hooks (use absolute paths):"
-    Write-Host "    SessionStart: $SessionStartCmd"
-    Write-Host "    SessionEnd:   $SessionEndCmd"
-    Write-Host "    PreCompact:   $PreCompactCmd"
-    Write-Host ""
-    Write-Host "  See config/settings-hooks.json.template for the full JSON structure."
-    Write-Host ""
+Write-Host ""
+
+# --- Hooks config (smart detection) ---
+Write-Host "Hooks configuration..." -ForegroundColor Cyan
+Write-Host "  Hooks use absolute paths so they work from any Claude Code session."
+Write-Host ""
+
+$SessionStartCmd = "$PythonPath $($VaultPath)\scripts\grimoire\session-start.py"
+$SessionEndCmd = "$PythonPath $($VaultPath)\scripts\grimoire\session-end.py"
+$PreCompactCmd = "$PythonPath $($VaultPath)\scripts\grimoire\pre-compact.py"
+
+# Scan for settings files that could hold hooks
+$hooksCandidates = @()
+$hooksLocations = @(
+    (Join-Path $env:USERPROFILE ".claude.json"),
+    (Join-Path $ClaudeHome "settings.json"),
+    (Join-Path $ClaudeHome "settings.local.json"),
+    (Join-Path $VaultPath ".claude\settings.local.json")
+)
+
+foreach ($loc in $hooksLocations) {
+    if (Test-Path $loc) { $hooksCandidates += $loc }
+}
+
+Write-Host "Hooks need to be added to your Claude Code settings." -ForegroundColor Yellow
+Write-Host ""
+Write-Host "  Check which file holds your existing hooks or permissions,"
+Write-Host "  then merge in the grimoire hooks. Found these candidates:"
+Write-Host ""
+if ($hooksCandidates.Count -gt 0) {
+    foreach ($c in $hooksCandidates) { Write-Host "    - $c" }
 } else {
-    @"
-{
-  "permissions": {
-    "allow": [
-      "mcp__grimoire__wiki_status",
-      "mcp__grimoire__wiki_search",
-      "mcp__grimoire__wiki_read",
-      "mcp__grimoire__wiki_list",
-      "mcp__grimoire__wiki_write_summary",
-      "mcp__grimoire__wiki_write_article",
-      "mcp__grimoire__wiki_add_ontology",
-      "mcp__grimoire__wiki_add_source",
-      "mcp__grimoire__wiki_learn",
-      "mcp__grimoire__wiki_commit",
-      "mcp__grimoire__wiki_compile_diff",
-      "mcp__grimoire__wiki_ontology_query",
-      "mcp__grimoire__wiki_lint"
-    ]
-  },
-  "hooks": {
-    "SessionStart": [{
-      "matcher": "",
-      "hooks": [{
-        "type": "command",
-        "command": "$SessionStartEscaped",
-        "timeout": 15
-      }]
-    }],
-    "PreCompact": [{
-      "matcher": "",
-      "hooks": [{
-        "type": "command",
-        "command": "$PreCompactEscaped",
-        "timeout": 10
-      }]
-    }],
-    "SessionEnd": [{
-      "matcher": "",
-      "hooks": [{
-        "type": "command",
-        "command": "$SessionEndEscaped",
-        "timeout": 10
-      }]
-    }]
-  }
+    Write-Host "    (no settings files found)"
 }
-"@ | Out-File -FilePath $hooksTarget -Encoding utf8
-    Write-Host "Hooks and permissions written to $hooksTarget" -ForegroundColor Green
-}
+Write-Host ""
+Write-Host "  Hook commands (use these exact strings with absolute paths):"
+Write-Host ""
+Write-Host "    SessionStart: $SessionStartCmd"
+Write-Host "    SessionEnd:   $SessionEndCmd"
+Write-Host "    PreCompact:   $PreCompactCmd"
+Write-Host ""
+Write-Host "  See config/settings-hooks.json.template for the full JSON structure."
+Write-Host ""
 
 # Obsidian CSS
 $obsidianDir = Join-Path $VaultPath ".obsidian"
