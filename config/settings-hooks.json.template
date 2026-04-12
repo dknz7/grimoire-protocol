@@ -1,5 +1,6 @@
 {
-  "_comment": "Merge this into your existing .claude/settings.local.json. If you already have permissions or hooks, add these entries to the existing arrays — don't overwrite.",
+  "_comment": "Merge this into your existing settings file. If you already have permissions or hooks, add these entries — don't overwrite.",
+  "_comment_paths": "IMPORTANT: Replace the hook commands below with ABSOLUTE paths to your vault's scripts. On Windows, Claude Code runs hooks through bash (Git Bash), NOT PowerShell — use forward slashes: /c/Users/you/vault/scripts/grimoire/session-start.py, NOT backslashes.",
 
   "permissions": {
     "allow": [

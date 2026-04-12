@@ -398,11 +398,22 @@ if ($hooksCandidates.Count -gt 0) {
     Write-Host "    (no settings files found)"
 }
 Write-Host ""
-Write-Host "  Hook commands (use these exact strings with absolute paths):"
+Write-Host "  IMPORTANT (Windows): Claude Code runs hooks through bash, NOT PowerShell." -ForegroundColor Red
+Write-Host "  Use forward slashes in hook commands: /c/Users/... NOT C:\Users\..." -ForegroundColor Red
+Write-Host "  Quote paths with spaces." -ForegroundColor Red
 Write-Host ""
-Write-Host "    SessionStart: $SessionStartCmd"
-Write-Host "    SessionEnd:   $SessionEndCmd"
-Write-Host "    PreCompact:   $PreCompactCmd"
+
+# Convert Windows paths to bash-compatible paths for display
+$BashVault = ($VaultPath -replace '\\', '/') -replace '^([A-Za-z]):', '/$1'
+$BashVault = $BashVault.Substring(0,2).ToLower() + $BashVault.Substring(2)
+$BashPython = ($PythonPath -replace '\\', '/') -replace '^([A-Za-z]):', '/$1'
+$BashPython = $BashPython.Substring(0,2).ToLower() + $BashPython.Substring(2)
+
+Write-Host "  Hook commands (bash-compatible paths for Windows):"
+Write-Host ""
+Write-Host "    SessionStart: $BashPython `"$BashVault/scripts/grimoire/session-start.py`""
+Write-Host "    SessionEnd:   $BashPython `"$BashVault/scripts/grimoire/session-end.py`""
+Write-Host "    PreCompact:   $BashPython `"$BashVault/scripts/grimoire/pre-compact.py`""
 Write-Host ""
 Write-Host "  See config/settings-hooks.json.template for the full JSON structure."
 Write-Host ""

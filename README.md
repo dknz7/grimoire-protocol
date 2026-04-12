@@ -255,7 +255,17 @@ The scaffold script (`scaffold.sh` / `scaffold.ps1`) will scan these locations a
 
 **Hooks & permissions** — similarly, find which file holds your existing hooks or permissions and merge in the grimoire hooks. See `config/settings-hooks.json.template` for the full JSON structure. Hook commands use absolute paths to the vault's `scripts/grimoire/` folder, so they work from any Claude Code session regardless of working directory.
 
-**Windows users:** replace `python3` in the hook commands with the full path to your Python executable.
+**Windows users — important gotcha:** Claude Code runs hooks through **bash** (Git Bash), not PowerShell. This means hook commands must use forward-slash paths, not backslashes:
+
+```
+# Correct (bash-compatible):
+/c/Users/you/AppData/Local/Python/python.exe "/c/Users/you/vault/scripts/grimoire/session-start.py"
+
+# Wrong (will fail silently):
+C:\Users\you\AppData\Local\Python\python.exe C:\Users\you\vault\scripts\grimoire\session-start.py
+```
+
+Quote any paths with spaces. The PowerShell scaffold script will auto-convert paths for you.
 
 **Obsidian users** — copy `obsidian/snippets/grimoire-colors.css` to your vault's `.obsidian/snippets/` folder, then enable it in Obsidian: Settings > Appearance > CSS Snippets > toggle on `grimoire-colors`.
 
