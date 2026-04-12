@@ -63,6 +63,43 @@ Or just talk naturally — "what does the grimoire know about auth patterns?" wo
 
 ---
 
+## The Pipeline
+
+```
+  ┌─────────┐     ┌───────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐
+  │  DROP   │────>│ SUMMARISE │────>│ EXTRACT │────>│  WRITE  │────>│  QUERY  │
+  │         │     │           │     │         │     │         │     │         │
+  │ Sources │     │ Concise   │     │Concepts │     │ Wiki    │     │ Search  │
+  │ into    │     │ summaries │     │Entities │     │articles │     │ & ask   │
+  │ inbox/  │     │ per file  │     │Links    │     │with FTS │     │anything │
+  └─────────┘     └───────────┘     └─────────┘     └─────────┘     └─────────┘
+```
+
+Drop anything into `inbox/` — markdown, PDFs, Word docs, code files, images, even emails. The compiler chews through it all.
+
+---
+
+## Supported Source Formats
+
+The grimoire engine handles format detection automatically. Just drop files in and it figures out the rest.
+
+| Format | Extensions | What Gets Extracted |
+|---|---|---|
+| **Markdown** | `.md` | Body text, frontmatter parsed separately |
+| **PDF** | `.pdf` | Full text (pure Go extraction, no external deps) |
+| **Word** | `.docx` | Document text from XML |
+| **Excel** | `.xlsx` | Cell values and sheet data |
+| **PowerPoint** | `.pptx` | Slide text content |
+| **CSV** | `.csv` | Headers + rows (up to 1,000 rows) |
+| **EPUB** | `.epub` | Chapter text from XHTML |
+| **Email** | `.eml` | From/To/Subject/Date + body |
+| **Plain Text** | `.txt`, `.log` | Raw content |
+| **Transcripts** | `.vtt`, `.srt` | Subtitle/caption content |
+| **Images** | `.png`, `.jpg`, `.gif`, `.webp`, `.svg` | Vision LLM describes content, captions, visible text |
+| **Code** | `.go`, `.py`, `.js`, `.ts`, `.rs`, etc. | Source code as-is |
+
+---
+
 ## How It's Built
 
 Grimoire Protocol is a hybrid of three open-source projects, combined into something that's more than the sum of its parts:
@@ -84,8 +121,8 @@ Based on [Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/4
 - **[Claude Code](https://claude.ai/claude-code)** with a Pro, Max or Team subscription (this is the brain)
 - **[Python 3.12+](https://python.org/)** (for hook scripts — stdlib only, no pip installs)
 - **[Obsidian](https://obsidian.md/)** (optional but recommended — the wiki is just markdown, any editor works)
-- **[Obsidian CLI](https://obsidian.md/cli)** (Companion CLI to Obisidian, also recommended to turn on)
-- **[Obsidian Web Clipper](https://obsidian.md/clipper)** (Companion Web Clipper extension for Chrome and Firefox - Clip anything to to your inbox as markdown from the web and let Grimoire compile it for you)
+- **[Obsidian CLI](https://obsidian.md/cli)** (Companion CLI to Obsidian, also recommended to turn on)
+- **[Obsidian Web Clipper](https://obsidian.md/clipper)** (Companion Web Clipper extension for Chrome and Firefox - Clip anything to your inbox as markdown from the web and let Grimoire compile it for you)
 
 **To build from source** (optional — pre-built binaries are available in [Releases](../../releases)):
 - [Go 1.22+](https://go.dev/dl/)
