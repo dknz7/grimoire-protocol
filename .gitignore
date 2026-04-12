@@ -1,0 +1,14 @@
+# Reference repos (cloned during development, not distributed)
+reference/
+
+# Pre-built binaries (distributed via GitHub Releases, not in repo)
+bin/*.exe
+bin/grimoire-*
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc

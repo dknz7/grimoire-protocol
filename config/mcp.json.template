@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "grimoire": {
+      "command": "{{VAULT_ROOT}}/.grimoire/grimoire",
+      "args": ["serve", "--project", "{{VAULT_ROOT}}"],
+      "env": {}
+    }
+  }
+}

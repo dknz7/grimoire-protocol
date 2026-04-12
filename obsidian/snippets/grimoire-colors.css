@@ -1,0 +1,24 @@
+/* Grimoire Protocol — Wiki folder color coding */
+
+/* Wiki root — warm orange (matches vault accent #ff6714) */
+.nav-folder-title[data-path="wiki"] .nav-folder-title-content {
+  color: #ff6714;
+  font-weight: 600;
+}
+
+/* Wiki subcategories */
+.nav-folder-title[data-path="wiki/concepts"] .nav-folder-title-content { color: #e8a87c; }
+.nav-folder-title[data-path="wiki/entities"] .nav-folder-title-content { color: #d4a373; }
+.nav-folder-title[data-path="wiki/sources"] .nav-folder-title-content { color: #85c88a; }
+.nav-folder-title[data-path="wiki/connections"] .nav-folder-title-content { color: #7ec8e3; }
+.nav-folder-title[data-path="wiki/questions"] .nav-folder-title-content { color: #c38fff; }
+.nav-folder-title[data-path="wiki/meta"] .nav-folder-title-content { color: #888888; }
+
+/* Inbox — muted to signal "raw, unprocessed" */
+.nav-folder-title[data-path="inbox"] .nav-folder-title-content { color: #999999; }
+
+/* Custom callouts for wiki articles */
+.callout[data-callout="contradiction"] { --callout-color: 209, 105, 105; }
+.callout[data-callout="gap"] { --callout-color: 220, 220, 170; }
+.callout[data-callout="key-insight"] { --callout-color: 79, 193, 255; }
+.callout[data-callout="stale"] { --callout-color: 128, 128, 128; }

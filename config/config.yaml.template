@@ -1,0 +1,78 @@
+# Grimoire Protocol — sage-wiki configuration
+#
+# Copy this to your vault root as 'config.yaml' and customise.
+# The grimoire engine (sage-wiki) reads this on startup.
+#
+# IMPORTANT: The api/models sections use dummy values — all LLM work
+# runs through your Claude Code subscription, not sage-wiki's built-in
+# API calls. Never call wiki_compile or wiki_capture MCP tools.
+
+version: 1
+project: grimoire-protocol
+description: "My compiled knowledge base"
+
+sources:
+  - path: inbox/sessions
+    type: auto
+    watch: true
+  - path: inbox/tldr
+    type: auto
+    watch: true
+  - path: inbox/daily
+    type: auto
+    watch: true
+  - path: inbox/drops
+    type: auto
+    watch: true
+  - path: daily
+    type: auto
+    watch: true
+  # Add your own source folders below.
+  # Set watch: true for folders that change frequently.
+  # Set watch: false for folders you compile manually.
+  # - path: projects
+  #   type: auto
+  #   watch: false
+  # - path: research
+  #   type: auto
+  #   watch: false
+
+output: wiki
+
+ignore:
+  - .obsidian
+  - .git
+  - .claude
+  - .sage
+  - .grimoire
+  - archive
+  - node_modules
+  - "*.psd"
+
+# Dummy API config — passes engine validation but is never used.
+# All LLM work runs through Claude Code subscription.
+api:
+  provider: anthropic
+  api_key: "not-used-subscription-powered"
+
+models:
+  summarize: "not-used"
+  extract: "not-used"
+  write: "not-used"
+  lint: "not-used"
+  query: "not-used"
+
+compiler:
+  max_parallel: 1
+  auto_commit: false
+  auto_lint: false
+  # Set your IANA timezone:
+  timezone: Australia/Sydney
+
+search:
+  hybrid_weight_bm25: 0.7
+  hybrid_weight_vector: 0.3
+  default_limit: 10
+
+serve:
+  transport: stdio
