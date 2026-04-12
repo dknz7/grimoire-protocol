@@ -308,6 +308,7 @@ Watch it work. Articles appear in `wiki/`. The index updates. The hot cache refr
 | `/grimoire status` | Dashboard — article counts, pending sources, index stats |
 | `/grimoire lint` | Health check — broken links, orphans, stale articles |
 | `/grimoire hot` | Regenerate the hot cache manually |
+| `/grimoire capture` | Manually capture the current session to inbox (for desktop app or mid-session snapshots) |
 
 All commands also respond to natural language. "Compile the grimoire", "what does the grimoire know about X", "check grimoire health" — it'll figure it out.
 
@@ -327,9 +328,9 @@ Open `http://localhost:3333` in your browser.
 
 ## Included Skills
 
-Grimoire Protocol ships with 13 Claude Code skills across two layers.
+Grimoire Protocol ships with 14 Claude Code skills across two layers.
 
-### Grimoire Skills (6) — Knowledge Base Engine
+### Grimoire Skills (7) — Knowledge Base Engine
 
 | Skill | Command | What It Does |
 |---|---|---|
@@ -339,6 +340,7 @@ Grimoire Protocol ships with 13 Claude Code skills across two layers.
 | `grimoire-query` | `/grimoire query` | Query with cascade protocol — hot cache → FTS5 search → read articles |
 | `grimoire-status` | `/grimoire status` | Dashboard — article counts, pending sources, index stats |
 | `grimoire-lint` | `/grimoire lint` | Health checks — broken links, orphans, stale articles, contradictions |
+| `grimoire-capture` | `/grimoire capture` | Manual session capture — for desktop app or mid-session snapshots |
 
 ### Daily Workflow Skills (7) — Optional Productivity Layer
 
