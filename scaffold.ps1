@@ -93,7 +93,7 @@ Write-Host ""
 Write-Host "Creating vault structure..." -ForegroundColor Cyan
 
 $dirs = @(
-    "inbox\sessions", "inbox\tldr", "inbox\daily", "inbox\drops",
+    "inbox\sessions", "inbox\tldr", "inbox\daily", "inbox\drops", "inbox\skills",
     "wiki\concepts", "wiki\entities", "wiki\sources", "wiki\connections", "wiki\questions", "wiki\meta",
     ".sage",
     "scripts\grimoire"

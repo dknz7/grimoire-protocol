@@ -25,6 +25,9 @@ sources:
   - path: inbox/drops
     type: auto
     watch: true
+  - path: inbox/skills      # Populated by scripts/grimoire/snapshot-skills.py — captures your active assistant skills
+    type: auto
+    watch: true
   - path: daily
     type: auto
     watch: true
@@ -40,6 +43,12 @@ sources:
 
 output: wiki
 
+# IGNORE NOTES:
+#   - Patterns are matched against paths as the engine sees them on disk.
+#   - On Windows the engine reports paths with backslashes — for any nested ignore
+#     (e.g. "subdir/junk") list both forms ("subdir/junk" AND "subdir\\junk") so
+#     it works on both Windows and *nix scaffolds.
+#   - Bare names match top-level only; the engine does NOT support "**/" globs.
 ignore:
   - .obsidian
   - .git
@@ -49,6 +58,10 @@ ignore:
   - archive
   - node_modules
   - "*.psd"
+  # Add your own ignore patterns. Examples:
+  # - tools                  # tool / binary directories that aren't knowledge sources
+  # - "resources/mcps"       # third-party clones — list both slash forms on Windows
+  # - "resources\\mcps"
 
 # Dummy API config — passes engine validation but is never used.
 # All LLM work runs through Claude Code subscription.

@@ -105,6 +105,7 @@ mkdir -p "$VAULT_ROOT/inbox/sessions"
 mkdir -p "$VAULT_ROOT/inbox/tldr"
 mkdir -p "$VAULT_ROOT/inbox/daily"
 mkdir -p "$VAULT_ROOT/inbox/drops"
+mkdir -p "$VAULT_ROOT/inbox/skills"   # populated by snapshot-skills.py before each compile
 
 # Wiki
 for dir in concepts entities sources connections questions meta; do

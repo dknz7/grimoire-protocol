@@ -53,6 +53,9 @@ Repeat forever. Knowledge compounds.
 2. **SessionEnd hook** captures conversation transcripts for later compilation
 3. **PreCompact hook** saves context before Claude's auto-compaction eats it
 
+**Plus an optional capability snapshot:**
+- **`scripts/grimoire/snapshot-skills.py`** — walks your active Claude Code skills (`~/.claude/skills/*/SKILL.md`) and writes lightweight summaries to `inbox/skills/`. Run it before each compile (or wire it into a nightly routine). Result: your assistant's capabilities become first-class wiki articles that grow with your skill set.
+
 **You trigger the rest:**
 - `/grimoire compile` — process pending captures into wiki articles
 - `/grimoire query` — ask your knowledge base anything
@@ -393,15 +396,17 @@ your-vault/
 ├── .mcp.json                   ← MCP server registration
 ├── config.yaml                 ← engine configuration
 ├── scripts/
-│   └── grimoire/               ← hook scripts
+│   └── grimoire/               ← hook & helper scripts
 │       ├── session-start.py
 │       ├── session-end.py
-│       └── pre-compact.py
+│       ├── pre-compact.py
+│       └── snapshot-skills.py  ← snapshot ~/.claude/skills/*/SKILL.md → inbox/skills/
 ├── inbox/                      ← capture firehose (append-only)
 │   ├── sessions/               ← auto-captured by hooks
 │   ├── tldr/                   ← /tldr exports
 │   ├── daily/                  ← /today (all modes), /weekend, /weekly-recap captures
-│   └── drops/                  ← manual drops, /dump output
+│   ├── drops/                  ← manual drops, /dump output
+│   └── skills/                 ← snapshot-skills.py output (assistant capabilities)
 ├── wiki/                       ← compiled knowledge (compiler-owned)
 │   ├── hot.md                  ← session primer (~500 tokens)
 │   ├── index.md                ← master catalogue
