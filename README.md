@@ -346,12 +346,12 @@ Grimoire Protocol ships with 14 Claude Code skills across two layers.
 
 | Skill | Command | What It Does | Grimoire Integration |
 |---|---|---|---|
-| `today` | `/today` | Morning check-in — pull priorities, build a time-blocked day plan | Reads `wiki/hot.md` for compiled context |
-| `tonight` | `/tonight` | Nightly reflection — captures wins, blockers, carry-overs | Writes to `inbox/daily/` for compilation |
+| `today` | `/today` | Smart daily check-in — time-aware (morning/afternoon/evening modes), priority-ordered blocks, no rigid timestamps | Reads `wiki/hot.md` + writes to `inbox/daily/` |
+| `tonight` | `/tonight` | Alias — routes to `/today` (evening mode). Kept for backward compatibility with `!tonight`/`!goodnight` triggers | Handled by `/today` |
 | `weekend` | `/weekend` | Weekend planner — what's on, what needs doing, what's fun | Reads hot cache + writes to `inbox/daily/` |
-| `recap` | `/recap` | Weekly review — score objectives, set new ones, preview Monday | Reads hot cache + writes to `inbox/daily/` |
-| `tldr` | `/tldr` | Session summary export — structured capture of what happened | Writes to `inbox/tldr/` for compilation |
-| `eat` | `/eat` | Load context — query the grimoire to resume work on a project | Queries grimoire via `wiki_search` |
+| `weekly-recap` | `/weekly-recap` | Weekly review — score objectives, set new ones, preview Monday. Renamed from `/recap` to avoid clash with Anthropic's built-in `/recap` | Reads hot cache + writes to `inbox/daily/` |
+| `tldr` | `/tldr` | Session summary export — terminal `/tldr` captures the active session; Discord `!tldr` summarises N recent channel messages | Writes to `inbox/tldr/` for compilation |
+| `eat` | `/eat` | Load context — dual-path: import a recent `/tldr` export (Path A) or search the compiled grimoire wiki (Path B) | Reads `inbox/tldr/` and queries grimoire via `wiki_search` |
 | `dump` | `/dump` | Quick capture — auto-routes text to tasks, notes, or inbox | Ideas/notes route to `inbox/drops/` |
 
 The daily workflow skills are pre-wired to feed into the grimoire — tonight's capture, weekend plans, weekly recaps, and session summaries all land in `inbox/` for the next compile cycle.
@@ -364,12 +364,12 @@ If you run a Discord bot alongside Claude Code, the daily workflow skills can be
 
 | Discord Command | Triggers | Description |
 |---|---|---|
-| `!morning` | `/today` | Morning check-in — pull priorities, build day plan |
-| `!goodnight` | `/tonight` | Nightly check-in — reflect, capture wins/blockers |
+| `!today` / `!morning` | `/today` (morning mode) | Daily check-in — time-aware, builds priority-ordered blocks |
+| `!tonight` / `!goodnight` | `/today` (evening mode) | Same skill, evening-mode reflection — wins, carry-overs, tomorrow preview |
 | `!weekend` | `/weekend` | Weekend planner |
-| `!recap` | `/recap` | Weekly review and objectives |
+| `!recap` | `/weekly-recap` | Weekly review and objectives |
 | `!tldr` | `/tldr` | Summarise recent messages or capture a session |
-| `!eat <project>` | `/eat` | Load grimoire context for a project |
+| `!eat <project>` | `/eat` | Load context (recent tldr or grimoire) for a project |
 | `!dump <text>` | `/dump` | Quick capture — auto-route from Discord |
 | `!help` | — | Show available commands |
 
@@ -400,7 +400,7 @@ your-vault/
 ├── inbox/                      ← capture firehose (append-only)
 │   ├── sessions/               ← auto-captured by hooks
 │   ├── tldr/                   ← /tldr exports
-│   ├── daily/                  ← /tonight, /weekend, /recap captures
+│   ├── daily/                  ← /today (all modes), /weekend, /weekly-recap captures
 │   └── drops/                  ← manual drops, /dump output
 ├── wiki/                       ← compiled knowledge (compiler-owned)
 │   ├── hot.md                  ← session primer (~500 tokens)

@@ -2,7 +2,9 @@
 
 ## Why You Need This
 
-The daily workflow skills (`/today`, `/tonight`, `/weekend`, `/recap`, `/dump`) are designed to pull live data from a task manager — tasks due today, calendar events, habits, deadlines. Without one connected, the skills still work but they'll rely on what you tell them rather than pulling your schedule automatically.
+The daily workflow skills (`/today`, `/weekend`, `/weekly-recap`, `/dump`) are designed to pull live data from a task manager — tasks due today, calendar events, habits, deadlines. Without one connected, the skills still work but they'll rely on what you tell them rather than pulling your schedule automatically.
+
+> Note: `/tonight` is now an alias for `/today` (evening mode), so it shares the same task-manager needs.
 
 The grimoire itself (compile, query, status, lint) does **not** need a task manager. It's purely a knowledge base. The task manager integration is only for the daily workflow layer.
 
@@ -62,18 +64,18 @@ See the [TickTick worked example](examples/ticktick-setup.md) for exactly how we
 
 | Skill | What it reads | What it writes |
 |---|---|---|
-| `/today` | Tasks due today, calendar events, habits | Creates tasks from user input |
-| `/tonight` | Tasks completed today, tasks still open | Completes tasks user reports as done |
+| `/today` (morning/afternoon) | Tasks due today, calendar events, habits, upcoming bills | Creates tasks from user input |
+| `/today` (evening, also `/tonight`) | Tasks completed today, tasks still open | Completes tasks user reports as done |
 | `/weekend` | Saturday + Sunday tasks/events, Monday deadlines | Nothing (read-only) |
-| `/recap` | Week's completed tasks, next week's calendar, task backlog | Nothing (read-only) |
+| `/weekly-recap` | Week's completed tasks, next week's calendar, task backlog | Nothing (read-only) |
 | `/dump` | Nothing | Creates tasks, logs habits |
 
 ## No Task Manager? No Problem
 
 The skills degrade gracefully. Without a task manager:
-- `/today` asks you what's on your plate instead of pulling it automatically
-- `/tonight` asks what got done instead of checking completion status
-- `/weekend` and `/recap` work from your verbal input
+- `/today` (morning/afternoon) asks you what's on your plate instead of pulling it automatically
+- `/today` (evening) asks what got done instead of checking completion status
+- `/weekend` and `/weekly-recap` work from your verbal input
 - `/dump` saves ideas to `inbox/drops/` but can't create tasks
 
 The grimoire capture pipeline works regardless — your check-in outputs still land in `inbox/daily/` and get compiled into wiki articles.

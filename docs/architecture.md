@@ -49,7 +49,7 @@ Three hooks fire automatically during Claude Code sessions:
 - **SessionEnd** — extracts the last ~30 conversation turns and writes them to `inbox/sessions/` as a markdown file.
 - **PreCompact** — same as SessionEnd but fires before auto-compaction. Safety net for long sessions where context would otherwise be lost to summarisation.
 
-Daily workflow skills (`/today`, `/tonight`, `/recap`, `/weekend`, `/tldr`, `/dump`) also write to `inbox/` subdirectories.
+Daily workflow skills (`/today`, `/weekend`, `/weekly-recap`, `/tldr`, `/dump`) also write to `inbox/` subdirectories. Note: `/tonight` is an alias that routes to `/today` (evening mode).
 
 ### 2. Compile (Manual or Scheduled)
 

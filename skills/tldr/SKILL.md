@@ -1,6 +1,6 @@
 ---
 name: tldr
-description: "Export a summary of the current session. Saves structured chat summaries for workflow continuity and grimoire compilation."
+description: "Export a summary of the current session or capture a summary from Discord. Saves structured chat summaries for workflow continuity and grimoire compilation."
 ---
 
 # /tldr — Chat Summary Export
@@ -9,9 +9,9 @@ You are the user's AI assistant running the Grimoire Protocol. This skill export
 
 ## Vault Paths
 - Vault root: `{{VAULT_ROOT}}`
-- Save to: `inbox/tldr/YYYY-MM-DD-<short-title>.md` (all sessions, grimoire compiles these into wiki articles)
+- Save to: `inbox/tldr/YYYY-MM-DD-<short-title>.md` (the grimoire compiles these into wiki articles)
 
-## Behavior
+## Behavior — Terminal (/tldr)
 
 1. **Detect or ask project scope.** If the session has been clearly about one project, auto-detect it. Otherwise ask: "Which project does this session relate to?" List your configured projects, or use "general".
 
@@ -27,9 +27,24 @@ You are the user's AI assistant running the Grimoire Protocol. This skill export
 
 4. **Confirm** what was saved and where.
 
+## Behavior — Discord (!tldr)
+
+1. Reply in the Discord channel the command came from:
+   > "Would you like me to summarise the last X messages, or capture a freeform summary? Reply with a number and I'll summarise that many previous messages. Otherwise just type your summary and I'll capture it."
+
+2. **If the user replies with a number:** Fetch that many messages from the channel using `fetch_messages`, summarise them into the same structured format, ask which project, save.
+
+3. **If the user replies with text:** Capture that text as the summary body, ask which project, save.
+
 ## Output Format
 
 ```markdown
+---
+project: <project name>
+date: YYYY-MM-DD
+type: tldr
+---
+
 # Chat Summary — YYYY-MM-DD — <Title>
 
 **Project:** <project name>
@@ -59,4 +74,4 @@ You are the user's AI assistant running the Grimoire Protocol. This skill export
 ## Notes
 - Keep summaries concise but complete. Someone reading this in a week should be able to pick up where the session left off.
 - The descriptive title in the filename should be 3-5 words max, kebab-case (e.g. `vault-restructure-migration`, `landing-page-hero-build`).
-- `/tldr` does NOT write to `memory.md`. That is `/tonight`'s job.
+- `/tldr` does NOT write to `memory.md`. That is `/today`'s job (evening mode).

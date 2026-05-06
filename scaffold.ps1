@@ -210,20 +210,26 @@ status: evergreen
 
 Write-Host "Wiki seeded." -ForegroundColor Green
 
-# --- Copy skills ---
-Write-Host "Copying skills..." -ForegroundColor Cyan
+# --- Copy skills (with {{VAULT_ROOT}} substitution) ---
+Write-Host "Copying skills (filling in vault path)..." -ForegroundColor Cyan
 $SkillsSrc = Join-Path $ScriptDir "skills"
 $SkillsDst = Join-Path $VaultPath ".claude\skills"
 
 if (Test-Path $SkillsSrc) {
     $count = 0
     Get-ChildItem -Path $SkillsSrc -Directory | ForEach-Object {
+        $srcSkill = Join-Path $_.FullName "SKILL.md"
         $dst = Join-Path $SkillsDst $_.Name
+        $dstSkill = Join-Path $dst "SKILL.md"
         New-Item -ItemType Directory -Path $dst -Force | Out-Null
-        Copy-Item (Join-Path $_.FullName "SKILL.md") (Join-Path $dst "SKILL.md") -Force
+
+        # Read source, substitute {{VAULT_ROOT}} with the actual vault path,
+        # write out as UTF-8 (no BOM) to keep markdown clean.
+        $content = (Get-Content $srcSkill -Raw).Replace('{{VAULT_ROOT}}', $VaultPath)
+        [System.IO.File]::WriteAllText($dstSkill, $content)
         $count++
     }
-    Write-Host "$count skills copied." -ForegroundColor Green
+    Write-Host "$count skills copied (vault path filled in)." -ForegroundColor Green
 } else {
     Write-Host "No skills directory found — skipping." -ForegroundColor Yellow
 }

@@ -1,36 +1,38 @@
 ---
-name: recap
-description: "Weekly recap — review the week, score objectives, set new ones, preview Monday. Triggered by /recap."
+name: weekly-recap
+description: "Weekly recap — review the week, score objectives, set new ones, preview Monday. Triggered by /weekly-recap (terminal) or !recap (Discord). Renamed from /recap to avoid clash with Anthropic's built-in /recap command."
 ---
 
-# /recap — Weekly Recap
+# /weekly-recap — Weekly Recap
 
 You are the user's AI assistant running the Grimoire Protocol. This is the weekly review skill for the daily workflow system.
 
+> **Naming note:** The skill is named `weekly-recap` so the `/weekly-recap` slash command does not collide with Anthropic's built-in `/recap`. The Discord alias `!recap` still routes here.
+
 ## Vault Paths
 - Vault root: `{{VAULT_ROOT}}`
-- Save output to: `inbox/daily/YYYY-W##-recap.md` (relative to vault root, ISO week number)
+- Save output to: `inbox/daily/YYYY-W##-recap.md` (relative to vault root, ISO week number, feeds grimoire compiler)
 - Update: relevant `projects/*/context.md` files (weekly objectives section)
 - Append to: `memory.md` (vault root)
 
 ## Pre-Query: Read Context (do this silently before asking the user anything)
 
-1. Read ALL nightly logs from the past week (`inbox/daily/` — look for `YYYY-MM-DD-tonight.md` files, Monday through today) for what got done each day
-2. Read ALL morning logs from the past week (`inbox/daily/` — look for `YYYY-MM-DD-today.md` files, for planned vs actual comparison)
-3. Read the weekend plan if it exists (`inbox/daily/` — look for `YYYY-MM-DD-weekend.md`)
+1. Read ALL nightly logs from the past week (`inbox/daily/` — `YYYY-MM-DD-tonight.md` files or evening entries in `YYYY-MM-DD-today.md`, Monday through today) for what got done each day
+2. Read ALL morning logs from the past week (`inbox/daily/` — `YYYY-MM-DD-today.md` files, for planned vs actual comparison)
+3. Read the weekend plan if it exists (`inbox/daily/` — `YYYY-MM-DD-weekend.md`)
 4. Read ALL project context files from `projects/*/context.md`
 5. Read `wiki/hot.md` for recent grimoire context. If file doesn't exist or is empty, skip.
 6. Read current weekly objectives from your main project context file
-7. Pull from your task manager:
+7. Pull from your task manager (use available MCP tools):
    - Next week's calendar events (Monday through Sunday)
    - Upcoming deadlines (next 14 days)
    - Task backlog by project (what's outstanding across all lists)
    - Completed tasks from this past week
-8. Check weather forecast for your area for the coming week (if available)
+8. Check weather forecast for the coming week (if available)
 
 ## Step 1 — Weekend & Week Query
 
-Ask the user these questions. Keep it conversational — this is reflective, not an interrogation.
+Ask the user these questions (Discord if !recap, terminal if /weekly-recap). Keep it conversational — this is reflective, not an interrogation.
 
 1. "How was the weekend? Anything to note — work done, activities, decisions made?"
 2. "How did the week go overall? Any highlights or frustrations?"
@@ -48,12 +50,12 @@ Wait for the user's response.
 Using the week's nightly logs + task manager completion data + the user's response, compile:
 - **What got done** this week (across all domains)
 - **What didn't get done** (rolled tasks, incomplete objectives)
-- **Key decisions** made this week (pull from nightly logs and memory.md)
+- **Key decisions** made this week (pull from nightly logs and `memory.md`)
 - **Fires and unplanned work** that disrupted plans
-- **Patterns** worth noting (e.g., "day job took more time than planned 3 out of 5 days", "energy was low early in the week")
+- **Patterns** worth noting (e.g., "day-job took more time than planned 3 out of 5 days", "energy was low early in the week")
 
 ### Weekly Objectives Scorecard
-Review each weekly objective from your project context file:
+Review each weekly objective from your main project context file:
 - ✅ **Met** — completed this week
 - 🔄 **Rolled** — in progress, carrying to next week
 - ❌ **Dropped** — not started, deprioritised, or no longer relevant
@@ -78,14 +80,14 @@ Build a rough view of Monday:
 
 ## Step 3 — Output
 
-Send to the user:
+Send to the user (Discord if !recap, terminal if /weekly-recap):
 
 1. **Weekend recap:** Brief summary of what the user shared
 2. **Week in review:** What got done, what didn't, key decisions, fires, patterns
 3. **Weekly objectives scorecard:** Each objective with ✅ / 🔄 / ❌ and brief note
 4. **New weekly objectives:** 5-7 for the coming week, specific and actionable
 5. **Monday preview:** What's coming tomorrow
-6. **Key dates this week:** Deadlines, meetings, events from task manager calendar
+6. **Key dates this week:** Deadlines, meetings, events from your task manager calendar
 7. **Closing:** Brief and forward-looking
 
 ## Step 4 — Save to Vault
@@ -136,7 +138,7 @@ Generated: YYYY-MM-DD
 - [Date]: [Event/deadline]
 
 ---
-*Generated by /recap*
+*Generated by /weekly-recap*
 ```
 
 ## Step 5 — Update Context Files

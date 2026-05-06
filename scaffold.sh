@@ -226,19 +226,28 @@ done
 
 echo -e "${GREEN}Wiki seeded.${NC}"
 
-# --- Copy skills ---
-echo -e "${CYAN}Copying skills...${NC}"
+# --- Copy skills (with {{VAULT_ROOT}} substitution) ---
+echo -e "${CYAN}Copying skills (filling in vault path)...${NC}"
 SKILLS_SRC="$SCRIPT_DIR/skills"
 SKILLS_DST="$VAULT_ROOT/.claude/skills"
 mkdir -p "$SKILLS_DST"
 
 if [ -d "$SKILLS_SRC" ]; then
+    skill_count=0
     for skill_dir in "$SKILLS_SRC"/*/; do
         skill_name=$(basename "$skill_dir")
         mkdir -p "$SKILLS_DST/$skill_name"
-        cp "$skill_dir/SKILL.md" "$SKILLS_DST/$skill_name/SKILL.md"
+        # Substitute {{VAULT_ROOT}} with the actual vault path. Use awk's literal
+        # index/substr so any character (\, &, |, spaces) in the path passes through cleanly.
+        awk -v old='{{VAULT_ROOT}}' -v new="$VAULT_ROOT" '{
+            while ((i = index($0, old)) > 0) {
+                $0 = substr($0, 1, i-1) new substr($0, i + length(old))
+            }
+            print
+        }' "$skill_dir/SKILL.md" > "$SKILLS_DST/$skill_name/SKILL.md"
+        skill_count=$((skill_count + 1))
     done
-    echo -e "${GREEN}$(ls -d "$SKILLS_SRC"/*/ | wc -l) skills copied.${NC}"
+    echo -e "${GREEN}$skill_count skills copied (vault path filled in).${NC}"
 else
     echo -e "${YELLOW}No skills directory found at $SKILLS_SRC — skipping.${NC}"
 fi

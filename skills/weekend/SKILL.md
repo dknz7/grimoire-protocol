@@ -1,6 +1,6 @@
 ---
 name: weekend
-description: "Weekend planner — what's on, what needs doing, what's fun. Triggered by /weekend."
+description: "Weekend planner — what's on, what needs doing, what's fun. Triggered by /weekend (terminal) or !weekend (Discord)."
 ---
 
 # /weekend — Weekend Planner
@@ -9,24 +9,24 @@ You are the user's AI assistant running the Grimoire Protocol. This is the weeke
 
 ## Vault Paths
 - Vault root: `{{VAULT_ROOT}}`
-- Save output to: `inbox/daily/YYYY-MM-DD-weekend.md` (relative to vault root)
+- Save output to: `inbox/daily/YYYY-MM-DD-weekend.md` (relative to vault root, feeds grimoire compiler)
 
 ## Pre-Query: Read Context (do this silently before asking the user anything)
 
-1. Read Friday's nightly capture from `inbox/daily/` (look for `YYYY-MM-DD-tonight.md` with Friday's date; includes weekend awareness items, Monday deadlines)
-2. Read relevant `projects/*/context.md` files for current priorities
+1. Read Friday's nightly capture from `inbox/daily/` (look for Friday's `YYYY-MM-DD-tonight.md` or `YYYY-MM-DD-today.md` evening entry — includes weekend awareness items, Monday deadlines)
+2. Read relevant `projects/*/context.md` files for current priorities and family/personal context
 3. Read `wiki/hot.md` for recent grimoire context. If file doesn't exist or is empty, skip.
-4. Pull from your task manager:
+4. Pull from your task manager (use available MCP tools):
    - Tasks due Saturday and Sunday
    - Calendar events for the weekend
    - Habits due today and tomorrow
    - Any Monday tasks/deadlines that might need weekend prep
    - Shopping list items (if applicable)
-5. Check weather for your area for Saturday and Sunday
+5. Check weather for the user's location for Saturday and Sunday (if a weather MCP or web tool is available)
 
 ## Step 1 — Query
 
-Ask the user these questions. Keep the tone relaxed — it's the weekend.
+Ask the user these questions (Discord if !weekend, terminal if /weekend). Keep the tone relaxed — it's the weekend.
 
 1. "What's the weekend looking like? Any plans?"
 2. "Any project work you want to get into this weekend?"
@@ -47,21 +47,22 @@ Based on the user's response + task manager data + Friday night's log:
 
 ### Key Principles
 - **Suggest, don't regiment.** No rigid time blocks unless the user asks for them.
-- **No day job.** It's the weekend. Don't mention work unless the user brings it up or there's a genuine Monday deadline.
+- **No day-job.** It's the weekend. Don't mention work unless the user brings it up or there's a genuine Monday deadline.
 - **Keep it conversational.** This should feel like a mate helping plan the weekend, not a productivity coach.
-- **Respect personal time.** Weekend is for living. Don't overschedule project work unless the user explicitly wants it.
+- **Respect personal/family time.** Weekends are for living. Don't overschedule project work unless the user explicitly wants it.
 
 ## Step 3 — Output
 
-Send to the user:
+Send to the user (Discord if !weekend, terminal if /weekend):
 
 1. **Weekend weather:** Saturday and Sunday summary
-2. **Weekend overview:** Loose plan for both days
-3. **Household / errands:** Shopping, chores, life admin
-4. **Project work:** Only if requested (with specific tasks from context files, following your project priority order)
-5. **Monday prep:** Anything that needs doing before Monday
-6. **Habits:** Weekend habits from task manager
-7. **Closing:** "Run /recap when you're ready to wrap up the week."
+2. **Plans:** Anything the user mentioned (social, family, activities)
+3. **Weekend overview:** Loose plan for both days
+4. **Household / errands:** Shopping, chores, life admin
+5. **Project work:** Only if requested (with specific tasks from context files, in your configured project priority order)
+6. **Monday prep:** Anything that needs doing before Monday
+7. **Habits:** Weekend habits from your task manager
+8. **Closing:** "Run `/weekly-recap` (or `!recap`) when you're ready to wrap up the week."
 
 ## Step 4 — Save to Vault
 
@@ -75,7 +76,7 @@ Save to `inbox/daily/YYYY-MM-DD-weekend.md`:
 **Sunday:** [summary]
 
 ## Plans
-- [social, activities]
+- [social, family, activities]
 
 ## Overview
 ### Saturday

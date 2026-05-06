@@ -108,7 +108,7 @@ Pre-Query:
   - mcp__ticktick__list_tasks → Monday tasks (for prep awareness)
 ```
 
-### `/recap` (weekly review)
+### `/weekly-recap` (weekly review)
 
 ```
 Pre-Query:
