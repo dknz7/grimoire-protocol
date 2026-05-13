@@ -43,12 +43,15 @@ sources:
 
 output: wiki
 
-# IGNORE NOTES:
-#   - Patterns are matched against paths as the engine sees them on disk.
-#   - On Windows the engine reports paths with backslashes — for any nested ignore
-#     (e.g. "subdir/junk") list both forms ("subdir/junk" AND "subdir\\junk") so
-#     it works on both Windows and *nix scaffolds.
-#   - Bare names match top-level only; the engine does NOT support "**/" globs.
+# IGNORE NOTES (engine quirks — verified empirically):
+#   - Bare names in ignore match TOP-LEVEL ONLY. Engine does NOT support "**/" recursive globs.
+#   - File-extension globs (e.g. "*.psd", "*.gitkeep") DO NOT WORK — they are silently
+#     ignored. Filter binaries in the nightly routine's registration step instead.
+#   - For NESTED paths, you must list both slash forms — the Windows engine reports paths
+#     with backslashes, *nix with forward. Example for a nested git dir:
+#       - "templates/prompt-templates/.git"
+#       - "templates\\prompt-templates\\.git"
+#   - Every time you clone a new repo into the vault, add its .git path here in BOTH forms.
 ignore:
   - .obsidian
   - .git
@@ -57,11 +60,12 @@ ignore:
   - .grimoire
   - archive
   - node_modules
-  - "*.psd"
   # Add your own ignore patterns. Examples:
   # - tools                  # tool / binary directories that aren't knowledge sources
-  # - "resources/mcps"       # third-party clones — list both slash forms on Windows
+  # - "resources/mcps"       # third-party clones — both slash forms on Windows
   # - "resources\\mcps"
+  # - "templates/prompt-templates/.git"
+  # - "templates\\prompt-templates\\.git"
 
 # Dummy API config — passes engine validation but is never used.
 # All LLM work runs through Claude Code subscription.
