@@ -1,6 +1,6 @@
 ---
 name: grimoire
-description: "Grimoire Protocol — compile, query, and manage the knowledge base. Use when user says 'grimoire', 'compile the grimoire', 'compile the wiki', 'query the grimoire', 'what does the grimoire know', 'grimoire status', 'check grimoire', 'lint the wiki', 'refresh hot cache', 'capture this session', 'save session', or runs /grimoire. Subcommands: compile, query, status, lint, hot, capture."
+description: "Grimoire Protocol — compile, query, and manage the knowledge base. Use when user says 'grimoire', 'compile the grimoire', 'compile the wiki', 'query the grimoire', 'what does the grimoire know', 'grimoire status', 'check grimoire', 'lint the wiki', 'refresh hot cache', 'capture this session', 'save session', 'run the dream sequence', or runs /grimoire. Subcommands: compile, query, status, lint, hot, capture, dream."
 ---
 
 # /grimoire — Knowledge Base Management
@@ -19,6 +19,7 @@ Route based on the argument or natural language intent:
 | `lint` | "lint", "health check", "find stale articles" | Run health checks (see /grimoire-lint skill) |
 | `hot` | "hot", "refresh cache", "update hot cache" | Regenerate hot.md (see /grimoire-hot skill) |
 | `capture` | "capture", "save session", "end session" | Manually capture current session to inbox (see /grimoire-capture skill) |
+| `dream` | "dream", "dream sequence", "run the dream" | Run the nightly Dream Sequence ritual (see /grimoire-dream skill) |
 
 If no subcommand is given, show a brief help message listing available subcommands.
 

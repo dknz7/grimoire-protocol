@@ -32,6 +32,21 @@ No API keys. No vector database setup. No cloud services. Just your vault, your 
 
 ---
 
+## You Only Need to Remember 3 Things
+
+**1. FEED IT** — drop anything into `inbox/` and the grimoire ingests it. End a good session with `/grimoire capture` to save the takeaways too.
+> *Example:* paste an article into `inbox/drops/`, say "compile the grimoire" → it becomes a linked wiki page.
+
+**2. ASK IT** — ask what you know and get a cited answer from everything you've fed it.
+> *Example:* "what does the grimoire know about auth patterns?" → a synthesised answer with `[[wikilinks]]`.
+
+**3. DREAM SEQUENCE** — every night the grimoire reconciles, compiles what's new, runs a light health check, and refreshes its hot cache. It wakes up smarter than it slept.
+> *Example:* you drop three notes during the day; by morning they're compiled, cross-linked, and in the hot cache.
+
+Day-to-day commands: **`add this`** · **`/grimoire capture`** · **`what does the grimoire know about ___`** · **`/grimoire compile`**
+
+---
+
 ## What It Actually Does
 
 ```
@@ -312,6 +327,7 @@ Watch it work. Articles appear in `wiki/`. The index updates. The hot cache refr
 | `/grimoire lint` | Health check — broken links, orphans, stale articles |
 | `/grimoire hot` | Regenerate the hot cache manually |
 | `/grimoire capture` | Manually capture the current session to inbox (for desktop app or mid-session snapshots) |
+| `/grimoire dream` | Run the nightly Dream Sequence on demand (reconcile + compile + light lint + refresh) |
 
 All commands also respond to natural language. "Compile the grimoire", "what does the grimoire know about X", "check grimoire health" — it'll figure it out.
 
@@ -331,9 +347,9 @@ Open `http://localhost:3333` in your browser.
 
 ## Included Skills
 
-Grimoire Protocol ships with 14 Claude Code skills across two layers.
+Grimoire Protocol ships with 15 Claude Code skills across two layers.
 
-### Grimoire Skills (7) — Knowledge Base Engine
+### Grimoire Skills (8) — Knowledge Base Engine
 
 | Skill | Command | What It Does |
 |---|---|---|
@@ -344,6 +360,7 @@ Grimoire Protocol ships with 14 Claude Code skills across two layers.
 | `grimoire-status` | `/grimoire status` | Dashboard — article counts, pending sources, index stats |
 | `grimoire-lint` | `/grimoire lint` | Health checks — broken links, orphans, stale articles, contradictions |
 | `grimoire-capture` | `/grimoire capture` | Manual session capture — for desktop app or mid-session snapshots |
+| `grimoire-dream` | `/grimoire dream` | The nightly Dream Sequence ritual — reconcile registry, drain firehose, light lint, refresh hot cache |
 
 ### Daily Workflow Skills (7) — Optional Productivity Layer
 
@@ -388,7 +405,7 @@ Discord integration is entirely optional. Everything works from the terminal wit
 your-vault/
 ├── .claude/
 │   ├── settings.local.json     ← hooks + permissions
-│   └── skills/                 ← all 13 skills
+│   └── skills/                 ← all 15 skills
 ├── .grimoire/
 │   └── grimoire                ← engine binary (gitignored)
 ├── .sage/

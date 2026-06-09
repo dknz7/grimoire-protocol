@@ -19,7 +19,11 @@ You are the user's AI assistant running the Grimoire Protocol. This skill compil
 Execute these steps in order:
 
 ### Step 1 — Check for Pending Sources
-Call `wiki_compile_diff`. If zero pending sources, report "Grimoire is current — nothing to compile." and stop.
+Run:
+```bash
+python3 {{VAULT_ROOT}}/scripts/grimoire/registry.py pending
+```
+Each printed line is a firehose source (`inbox/{sessions,tldr,daily,drops}`) that has no summary yet. If the output is empty, report "Grimoire is current — nothing to compile." and stop. `wiki_compile_diff` may be called for drift visibility only — never act on its counter.
 
 ### Step 2 — Read Pending Sources
 Read each pending source file. Group them by source folder for domain detection.
@@ -27,8 +31,8 @@ Read each pending source file. Group them by source folder for domain detection.
 ### Step 3 — Summarise (be concise)
 For each source:
 1. Generate a concise summary (3-5 sentences capturing key facts, decisions, and insights)
-2. Call `wiki_add_source` to register it in the manifest
-3. Call `wiki_write_summary` with the summary content and a list of concept names extracted from the source
+2. Call `wiki_write_summary` with the summary content and a list of concept names extracted from the source
+3. Run `python3 {{VAULT_ROOT}}/scripts/grimoire/registry.py mark "<source-path>" "wiki/summaries/<source-basename>.md"` to mark the source processed in the registry
 4. Identify the domain from content (customise domains in `config.yaml`)
 
 ### Step 4 — Extract Concepts (thorough)

@@ -115,6 +115,10 @@ domain: your-domain-here
 ---
 ```
 
+## Processed Registry (disk-truth tracking)
+
+A source is "processed" iff a summary file exists for it on disk (`wiki/summaries/<name>.md`) — not when an engine manifest flag says so. The engine's manifest counter is unreliable on Windows (it walks disk with backslash paths but stores forward-slash keys, so sources silently never flip to compiled). `wiki/processed.md` is the authoritative ledger, maintained by `scripts/registry.py` (`reconcile` / `pending` / `mark`). The Dream Sequence trusts the registry, never the engine counter. The nightly tracks only the capture firehose (`inbox/{sessions,tldr,daily,drops}`); reference directories are compiled on-demand.
+
 ## Parent Projects
 
 Grimoire Protocol is a hybrid of three open-source projects:
