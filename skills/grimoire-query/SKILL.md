@@ -36,11 +36,9 @@ Synthesise the answer in your own words. Include `[[wikilink]]` citations to sou
 
 ## Filing Answers
 
-If the answer is substantive and likely to be asked again:
-1. Write it to `wiki/questions/YYYY-MM-DD-<short-title>.md` with proper frontmatter
-2. Update `wiki/questions/_index.md` and `wiki/index.md`
+If the answer is substantive and likely to be asked again, file it as an article via `wiki_write_article` (it lands in `wiki/concepts/` with the rest — type it appropriately in frontmatter) and update `wiki/index.md`.
 
-Only file answers if they're genuinely worth preserving. Don't file trivial lookups.
+Only file answers if they're genuinely worth preserving. Don't file trivial lookups — in practice, real answers either become articles or stay in chat.
 
 ## Rules
 - All timestamps 24hr format

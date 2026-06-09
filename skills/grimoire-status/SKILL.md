@@ -14,9 +14,12 @@ You are the user's AI assistant running the Grimoire Protocol. This skill shows 
 ## Behavior
 
 1. Call `wiki_status` for article counts and index stats
-2. Call `wiki_compile_diff` for pending source count
+2. Get the authoritative pending count from the registry (NOT `wiki_compile_diff` — the engine counter is unreliable on Windows):
+   ```bash
+   python3 {{VAULT_ROOT}}/scripts/grimoire/registry.py pending
+   ```
 3. Read last 5 entries from `wiki/log.md` for recent activity
-4. Count files in each `wiki/` subdirectory for category breakdown
+4. Type breakdown: count `type:` frontmatter values across `wiki/concepts/*.md` (all articles live there, typed by frontmatter)
 
 Present as a clean dashboard. **Important:** Relabel the `project` field from wiki_status as `Vault:` in the output.
 
@@ -24,14 +27,14 @@ Present as a clean dashboard. **Important:** Relabel the `project` field from wi
 Grimoire Status
 
 Vault:       [name from wiki_status project field]
-Articles:    XX total
+Articles:    XX total (wiki/concepts/, typed by frontmatter)
   Concepts:     XX
   Entities:     XX
-  Sources:      XX
+  Artifacts:    XX
   Connections:  XX
-  Questions:    XX
+Summaries:   XX (wiki/summaries/, registry-tracked)
 
-Pending:     XX sources awaiting compilation
+Pending:     XX firehose sources awaiting compilation (registry truth)
 Last Compile: YYYY-MM-DD HH:MM
 
 Search Index:
@@ -39,7 +42,7 @@ Search Index:
   Vector entries: XX
 
 Recent Activity:
-  - [YYYY-MM-DD HH:MM] compiled X sources
+  - [YYYY-MM-DD HH:MM] dream | drained N sources
   - [YYYY-MM-DD HH:MM] lint found Y issues
 ```
 

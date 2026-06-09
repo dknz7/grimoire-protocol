@@ -94,7 +94,7 @@ Write-Host "Creating vault structure..." -ForegroundColor Cyan
 
 $dirs = @(
     "inbox\sessions", "inbox\tldr", "inbox\daily", "inbox\drops", "inbox\skills",
-    "wiki\concepts", "wiki\entities", "wiki\sources", "wiki\connections", "wiki\questions", "wiki\meta",
+    "wiki\concepts", "wiki\summaries", "wiki\meta",
     ".sage",
     "scripts\grimoire"
 )
@@ -181,30 +181,6 @@ foreach ($file in $seedFiles.GetEnumerator()) {
     $path = Join-Path $VaultPath $file.Key
     if (-not (Test-Path $path)) {
         $file.Value | Out-File -FilePath $path -Encoding utf8
-    }
-}
-
-# Sub-indexes
-foreach ($cat in @("concepts", "entities", "sources", "connections", "questions")) {
-    $idx = Join-Path $VaultPath "wiki\$cat\_index.md"
-    if (-not (Test-Path $idx)) {
-        $title = (Get-Culture).TextInfo.ToTitleCase($cat)
-        @"
----
-type: meta
-title: "$title Index"
-updated: $Today
-tags: [meta, grimoire, $cat]
-status: evergreen
----
-
-# $title
-
-| Article | Summary | Sources | Updated |
-|---------|---------|---------|---------|
-
-*Populated by ``/grimoire compile``.*
-"@ | Out-File -FilePath $idx -Encoding utf8
     }
 }
 

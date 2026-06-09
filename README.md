@@ -206,8 +206,8 @@ cp /path/to/grimoire .grimoire/grimoire    # or grimoire.exe on Windows
 # Capture inbox
 mkdir -p inbox/{sessions,tldr,daily,drops}
 
-# Wiki output (the grimoire itself)
-mkdir -p wiki/{concepts,entities,sources,connections,questions,meta}
+# Wiki output (the grimoire itself — all articles live in concepts/, typed by frontmatter)
+mkdir -p wiki/{concepts,summaries,meta}
 
 # Engine storage
 mkdir -p .sage
@@ -426,14 +426,12 @@ your-vault/
 │   └── skills/                 ← snapshot-skills.py output (assistant capabilities)
 ├── wiki/                       ← compiled knowledge (compiler-owned)
 │   ├── hot.md                  ← session primer (~500 tokens)
-│   ├── index.md                ← master catalogue
+│   ├── index.md                ← master catalogue (article + type + domain)
 │   ├── log.md                  ← compile history
 │   ├── overview.md             ← executive summary
-│   ├── concepts/               ← concept articles
-│   ├── entities/               ← people, orgs, tools
-│   ├── sources/                ← source summaries
-│   ├── connections/            ← cross-cutting synthesis
-│   ├── questions/              ← filed answers
+│   ├── processed.md            ← authoritative ledger of compiled sources (registry.py)
+│   ├── concepts/               ← ALL articles, typed by frontmatter (concept|entity|artifact|connection)
+│   ├── summaries/              ← engine-written per-source summaries (registry truth)
 │   └── meta/                   ← dashboards, lint reports
 └── .obsidian/                  ← (if using Obsidian)
     └── snippets/

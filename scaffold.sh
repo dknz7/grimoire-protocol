@@ -107,8 +107,8 @@ mkdir -p "$VAULT_ROOT/inbox/daily"
 mkdir -p "$VAULT_ROOT/inbox/drops"
 mkdir -p "$VAULT_ROOT/inbox/skills"   # populated by snapshot-skills.py before each compile
 
-# Wiki
-for dir in concepts entities sources connections questions meta; do
+# Wiki — one article home (concepts/, typed by frontmatter), engine summaries, lint reports
+for dir in concepts summaries meta; do
     mkdir -p "$VAULT_ROOT/wiki/$dir"
 done
 
@@ -200,30 +200,6 @@ status: evergreen
 *Auto-generated after first compile. Summarises the entire knowledge base.*
 OVREOF
 fi
-
-# Sub-indexes
-for category in concepts entities sources connections questions; do
-    idx="$VAULT_ROOT/wiki/$category/_index.md"
-    if [ ! -f "$idx" ]; then
-        TITLE="$(echo "$category" | sed 's/./\U&/')"
-cat > "$idx" << SUBEOF
----
-type: meta
-title: "$TITLE Index"
-updated: $TODAY
-tags: [meta, grimoire, $category]
-status: evergreen
----
-
-# $TITLE
-
-| Article | Summary | Sources | Updated |
-|---------|---------|---------|---------|
-
-*Populated by \`/grimoire compile\`.*
-SUBEOF
-    fi
-done
 
 echo -e "${GREEN}Wiki seeded.${NC}"
 

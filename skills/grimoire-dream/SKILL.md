@@ -30,7 +30,6 @@ Call `wiki_lint` for structural checks (broken links, orphans, sparse articles).
 1. Update `wiki/index.md` with any new/updated articles.
 2. Prepend a Dream Sequence entry at the TOP of `wiki/log.md`: `## [YYYY-MM-DD HH:MM] dream | <one-line summary>` listing reconciled/processed/articles/lint findings.
 3. Regenerate `wiki/hot.md` from scratch (~500 tokens, 24hr timestamps).
-4. Update relevant `wiki/<category>/_index.md` sub-indexes.
 
 ### Step 5 — Commit
 Call `wiki_commit`: `dream: nightly YYYY-MM-DD — processed N, created A, hot refreshed`.

@@ -11,7 +11,7 @@ You are the user's AI assistant running the Grimoire Protocol. This skill compil
 - Vault root: `{{VAULT_ROOT}}`
 - Sources: `inbox/sessions/`, `inbox/tldr/`, `inbox/daily/`, `inbox/drops/`
 - Also watches: `daily/`, `projects/`, `research/`, `resources/`, `templates/`, `work/`
-- Output: `wiki/` (concepts, entities, sources, connections, questions)
+- Output: `wiki/concepts/` (ALL articles live here, typed by frontmatter) + `wiki/summaries/` (engine-written per-source summaries)
 - MCP server: `grimoire` (tools prefixed `mcp__grimoire__`)
 
 ## Pipeline
@@ -48,14 +48,12 @@ For each concept identified:
 2. If exists: merge new information into existing article, update the `updated` date and `sources` list
 3. If new: write a fresh article
 
-**For concepts:** Call `wiki_write_article` (this writes to `wiki/concepts/` and indexes in FTS5)
-
-**For entities, sources, connections, questions:** Use the Write tool directly (since `wiki_write_article` hardcodes to `wiki/concepts/`), then call `wiki_add_ontology` to register in the graph.
+**ALL articles** (concepts, entities, artifacts, connections alike) go through `wiki_write_article` — it writes to `wiki/concepts/` and indexes in FTS5. The article's TYPE lives in its frontmatter, not its folder — frontmatter typing + the master index do the categorisation work.
 
 **Frontmatter schema (required on every article):**
 ```yaml
 ---
-type: concept|entity|source|connection|question
+type: concept|entity|artifact|connection
 title: "Human-Readable Title"
 aliases: []
 created: YYYY-MM-DD
@@ -78,7 +76,7 @@ For each entity and concept, call `wiki_add_ontology` to create:
 
 ### Step 7 — Write Connections (deep reasoning)
 Look for non-obvious cross-cutting insights that link 2+ concepts from different domains.
-Write connection articles to `wiki/connections/` with the Write tool.
+Write connection articles via `wiki_write_article` with `type: connection` frontmatter (they live in `wiki/concepts/` like everything else).
 Only create connections that are genuinely insightful — not just "X and Y were mentioned together".
 
 **Contradiction handling:** If new information conflicts with existing article content:
@@ -103,7 +101,6 @@ Only create connections that are genuinely insightful — not just "X and Y were
    - Active Threads: what's currently being worked on
    - Key Recent Facts: most important 3-5 facts from this compile
 4. **wiki/overview.md** — Update if the compile significantly changes the knowledge landscape
-5. Update relevant `_index.md` sub-indexes in each wiki category
 
 ### Step 9 — Commit
 Call `wiki_commit` with a descriptive message like: "compile: processed N sources, created X articles, updated Y"

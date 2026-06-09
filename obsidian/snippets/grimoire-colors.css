@@ -6,12 +6,9 @@
   font-weight: 600;
 }
 
-/* Wiki subcategories */
+/* Wiki subfolders — concepts/ holds ALL articles (typed by frontmatter) */
 .nav-folder-title[data-path="wiki/concepts"] .nav-folder-title-content { color: #e8a87c; }
-.nav-folder-title[data-path="wiki/entities"] .nav-folder-title-content { color: #d4a373; }
-.nav-folder-title[data-path="wiki/sources"] .nav-folder-title-content { color: #85c88a; }
-.nav-folder-title[data-path="wiki/connections"] .nav-folder-title-content { color: #7ec8e3; }
-.nav-folder-title[data-path="wiki/questions"] .nav-folder-title-content { color: #c38fff; }
+.nav-folder-title[data-path="wiki/summaries"] .nav-folder-title-content { color: #85c88a; }
 .nav-folder-title[data-path="wiki/meta"] .nav-folder-title-content { color: #888888; }
 
 /* Inbox — muted to signal "raw, unprocessed" */
